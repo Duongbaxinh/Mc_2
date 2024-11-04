@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Search Result</title>
+    <style>
+      body {
+        height: 100vh;
+        background-repeat: no-repeat;
+        background-size: 100%;
+        background-image: url("https://img.freepik.com/free-photo/pouch-map-toy-airplane-blue-background-with-space-writing-text_23-2147958180.jpg");
+      }
+
+      .containers {
+        display: grid;
+        gap: 10px;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+      }
+      .card {
+        width: 100%;
+        height: 300px;
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+      }
+
+      .card-img {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 1;
+      }
+
+      .card-right {
+        position: absolute;
+        width: 50%;
+        height: 100%;
+        top: 0;
+        right: 0;
+        z-index: 3;
+        background-color: red;
+        transition-duration: 0.3s;
+        transition-timing-function: linear;
+      }
+
+      .card-left {
+        position: absolute;
+        width: 50%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        z-index: 3;
+        background-color: red;
+        transition-duration: 0.3s;
+        transition-timing-function: linear;
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+
+      .card-text {
+        position: absolute;
+        padding: 20px;
+        box-sizing: border-box;
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        top: 0;
+        right: 0;
+        z-index: 5;
+      }
+
+      .card-text:hover ~ .card-left {
+        transform: translateX(100%);
+        background-color: yellow;
+      }
+
+      .card-title {
+        display: flex;
+        flex-direction: column;
+        justify-content: "center";
+      }
+
+      .result {
+        text-align: center;
+      }
+    </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCbtux0PfS6Aaz9svzdjV81ojYf44D3W6w"></script>
+    <script>
+      function initMap() {
+        var lat = {{ latitude }};
+        var lng = {{ longitude }};
+        if (lat && lng) {
+          var location = { lat: lat, lng: lng };
+          var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 14,
+            center: location
+          });
+          var marker = new google.maps.Marker({
+            position: location,
+            map: map
+          });
+        }
+      }
+    </script>
+  </head>
+
+  <body onload="initMap()">
+    <div class="result">
+      <h1>Prediction: {{ result }}</h1>
+    </div>
+
+    <div class="search-results">
+      {% if search_results %}
+      <h2>Related Information:</h2>
+      <div class="containers">
+        {% for result in search_results %}
+        <div>
+          <a href="{{ result.link }}" target="_blank">
+            <div class="card">
+              <img
+                src="{{ result.pagemap.cse_image.0.src }}"
+                alt="Image"
+                class="card-img"
+              />
+              <div class="card-right"></div>
+              <div class="card-left"></div>
+              <div class="card-text">
+                <div class="card-title">
+                  <h3>{{ result.title }}</h3>
+                  <p>{{ result.snippet }}</p>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <p>No related information found.</p>
+      {% endif %}
+    </div>
+
+    <!-- Bản đồ Google Maps -->
+    {% if latitude and longitude %}
+    <div id="map"></div>
+    {% else %}
+    <p>Google Maps data not available.</p>
+    {% endif %}
+
+    <a href="/">Back</a>
+
+    <script>
+      const cardTexts = document.querySelectorAll(".card-text");
+      const cardLefts = document.querySelectorAll(".card-left");
+      const cardRights = document.querySelectorAll(".card-right");
+
+      cardTexts.forEach((cardText, index) => {
+        const cardLeft = cardLefts[index]; // Lấy thẻ card-left tương ứng
+        const cardRight = cardRights[index]; // Lấy thẻ card-left tương ứng
+
+        cardText.addEventListener("mouseover", () => {
+          cardLeft.style.opacity = 0; // Thay đổi màu khi hover
+          cardRight.style.opacity = 0; // Thay đổi màu khi hover
+          cardLeft.style.transform = "translateX(-100%)"; // Thực hiện dịch chuyển
+          cardRight.style.transform = "translateX(100%)"; // Thực hiện dị
+        });
+
+        cardText.addEventListener("mouseout", () => {
+          cardLeft.style.opacity = 1; // Thay đổi màu khi hover
+          cardRight.style.opacity = 1; // Thay đổi màu khi hover
+          cardLeft.style.transform = "translateX(0)"; // Khôi phục vị trí ban đầu
+          cardRight.style.transform = "translateX(0)"; // Thực hiện dị
+        });
+      });
+    </script>
+  </body>
+</html>

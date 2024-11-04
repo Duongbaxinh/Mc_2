@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    {% load static %}
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background-repeat: no-repeat;
+        background-size: 100%;
+        background-image: url("https://img.freepik.com/free-photo/pouch-map-toy-airplane-blue-background-with-space-writing-text_23-2147958180.jpg");
+      }
+
+      .container {
+        width: 450px;
+        height: 450px;
+        border-radius: 10%;
+        box-shadow: inset 1px 1px 4px greenyellow;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .container:hover {
+        box-shadow: 1px 1px 4px greenyellow;
+      }
+
+      input {
+        display: none;
+      }
+
+      .image {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 50px;
+        height: 50px;
+        color: green;
+      }
+
+      .la {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .image:hover {
+        transform: rotate(360deg);
+        transition: 2s;
+      }
+
+      .predict_img {
+        width: 100%;
+        height: auto;
+        border-radius: 10%;
+        object-fit: cover;
+      }
+
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="home">
+      <div class="form_predict">
+        <form action="/predict" method="post" enctype="multipart/form-data">
+          {% csrf_token %} {{ form.as_p }}
+          <label for="pre">
+            <img
+              class="predict_img"
+              id="preview"
+              src="https://removal.ai/wp-content/uploads/2021/02/no-img.png"
+              alt="Preview Image"
+            />
+          </label>
+          <input
+            id="pre"
+            type="file"
+            name="img_pre"
+            accept="image/*"
+            onchange="previewImage(event)"
+          />
+          <label for="sub" class="la">
+            <img
+              class="image"
+              src="{% static 'svg/process.svg' %}"
+              alt=""
+              style="margin-top: 20px"
+            />
+          </label>
+          <input id="sub" type="submit" name="predict" />
+        </form>
+      </div>
+    </div>
+
+    <script>
+      function previewImage(event) {
+        const preview = document.getElementById("preview");
+        const file = event.target.files[0];
+
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            preview.src = e.target.result;
+          };
+          reader.readAsDataURL(file);
+        } else {
+          preview.src =
+            "https://removal.ai/wp-content/uploads/2021/02/no-img.png";
+        }
+      }
+    </script>
+  </body>
+</html>
